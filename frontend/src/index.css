@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-950: #07090E;
+  --color-ink-900: #0B0F19;
+  --color-ink-850: #101726;
+  --color-ink-800: #161F33;
+  --color-ink-700: #1E293B;
+  --color-ink-600: #334155;
+  --color-ink-500: #475569;
+
+  --color-copper-400: #FBBF24;
+  --color-copper-500: #F59E0B;
+  --color-copper-600: #D97706;
+  --color-copper-700: #B45309;
+
+  --color-ledger-paper: #0C101B;
+  --color-ledger-card: #121829;
+  --color-ledger-ruled: #1E293B;
+  --color-ledger-debit: #F43F5E;
+  --color-ledger-credit: #10B981;
+  --color-ledger-gold: #EAB308;
+
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "Space Mono", monospace;
+}
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  .font-mono,
+  .tabular-nums {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Mechanical Utility Meter Tumbler Styles */
+.odometer-digit-container {
+  display: inline-flex;
+  flex-direction: column;
+  height: 1.25em;
+  overflow: hidden;
+  position: relative;
+}
+
+.odometer-digit {
+  display: inline-block;
+  line-height: 1.25em;
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+/* Authentic Ruled Accounting Ledger Rows */
+.ledger-row {
+  border-bottom: 1px solid rgba(30, 41, 59, 0.7);
+  transition: background-color 0.15s ease;
+}
+
+.ledger-row:hover {
+  background-color: rgba(30, 41, 59, 0.35);
+}
+
+/* Custom Sleek Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0F19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
