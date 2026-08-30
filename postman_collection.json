@@ -1,0 +1,185 @@
+{
+  "info": {
+    "name": "MeterFlow — Usage-Based Billing & Metering Engine API",
+    "_postman_id": "99b3a0e1-4c6e-4b21-8f6a-usagebilling01",
+    "description": "Comprehensive Postman Collection for MeterFlow demonstrating idempotent ingestion, hybrid Redis metering, strategy-based dynamic pricing, atomic invoicing, and double-entry accounting ledger.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "customerId", "value": "cust_acme_corp", "type": "string" },
+    { "key": "planId", "value": "", "type": "string" },
+    { "key": "invoiceId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "System Health Probes",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-request-id", "value": "health-check-01" }],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ingestion",
+      "item": [
+        {
+          "name": "Ingest Usage Event (Idempotent)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": \"evt_sample_{{$timestamp}}\",\n  \"customer_id\": \"{{customerId}}\",\n  \"feature_key\": \"api_calls\",\n  \"quantity\": 25,\n  \"timestamp\": \"2026-08-15T12:00:00.000Z\",\n  \"metadata\": { \"region\": \"us-east-1\", \"service\": \"gateway\" }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/events", "host": ["{{baseUrl}}"], "path": ["events"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Aggregation",
+      "item": [
+        {
+          "name": "Get Customer Aggregated Usage",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/usage/{{customerId}}?periodKey=2026-08",
+              "host": ["{{baseUrl}}"],
+              "path": ["usage", "{{customerId}}"],
+              "query": [{ "key": "periodKey", "value": "2026-08" }]
+            }
+          }
+        },
+        {
+          "name": "Flush In-Memory Counters to DB",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/usage/flush", "host": ["{{baseUrl}}"], "path": ["usage", "flush"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Plans",
+      "item": [
+        {
+          "name": "Create Plan (Version 1)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Standard Hybrid Tier\",\n  \"pricing_config\": {\n    \"flat_fee\": {\n      \"amount_cents\": 2900,\n      \"description\": \"Base Subscription\"\n    },\n    \"rules\": [\n      {\n        \"feature_key\": \"api_calls\",\n        \"type\": \"tiered_graduated\",\n        \"config\": {\n          \"description\": \"API Invocations\",\n          \"tiers\": [\n            { \"from\": 0, \"to\": 1000, \"rate_cents\": 0 },\n            { \"from\": 1000, \"to\": 5000, \"rate_cents\": 5 },\n            { \"from\": 5000, \"to\": null, \"rate_cents\": 2 }\n          ]\n        }\n      }\n    ]\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/plans", "host": ["{{baseUrl}}"], "path": ["plans"] }
+          }
+        },
+        {
+          "name": "List Plans",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/plans", "host": ["{{baseUrl}}"], "path": ["plans"] }
+          }
+        },
+        {
+          "name": "Update Plan Pricing Config (Zero-Redeploy)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Standard Hybrid Tier v2\",\n  \"pricing_config\": {\n    \"flat_fee\": {\n      \"amount_cents\": 3900,\n      \"description\": \"Base Subscription v2\"\n    },\n    \"rules\": [\n      {\n        \"feature_key\": \"api_calls\",\n        \"type\": \"tiered_graduated\",\n        \"config\": {\n          \"description\": \"API Invocations v2\",\n          \"tiers\": [\n            { \"from\": 0, \"to\": 1000, \"rate_cents\": 0 },\n            { \"from\": 1000, \"to\": 5000, \"rate_cents\": 8 },\n            { \"from\": 5000, \"to\": null, \"rate_cents\": 3 }\n          ]\n        }\n      }\n    ]\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["plans", "{{planId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pricing",
+      "item": [
+        {
+          "name": "Preview Pricing Calculation",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plan_id\": \"{{planId}}\",\n  \"usage\": {\n    \"api_calls\": 3500\n  }\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/pricing/preview", "host": ["{{baseUrl}}"], "path": ["pricing", "preview"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invoices",
+      "item": [
+        {
+          "name": "Generate & Finalize Invoice",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"{{customerId}}\",\n  \"plan_id\": \"{{planId}}\",\n  \"period_start\": \"2026-08-01T00:00:00.000Z\",\n  \"period_end\": \"2026-08-31T23:59:59.999Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices/generate", "host": ["{{baseUrl}}"], "path": ["invoices", "generate"] }
+          }
+        },
+        {
+          "name": "Get Invoice by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/invoices/{{invoiceId}}", "host": ["{{baseUrl}}"], "path": ["invoices", "{{invoiceId}}"] }
+          }
+        },
+        {
+          "name": "Attempt Mutate Finalized Invoice (403 Forbidden)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"total_cents\": 9999\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/invoices/{{invoiceId}}", "host": ["{{baseUrl}}"], "path": ["invoices", "{{invoiceId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ledger",
+      "item": [
+        {
+          "name": "System-Wide Ledger Summary & Invariant Check",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/ledger/summary", "host": ["{{baseUrl}}"], "path": ["ledger", "summary"] }
+          }
+        },
+        {
+          "name": "Get Invoice Double-Entry Journal Audit",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/ledger/invoice/{{invoiceId}}", "host": ["{{baseUrl}}"], "path": ["ledger", "invoice", "{{invoiceId}}"] }
+          }
+        },
+        {
+          "name": "List All Journal Entries",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/ledger/entries", "host": ["{{baseUrl}}"], "path": ["ledger", "entries"] }
+          }
+        }
+      ]
+    }
+  ]
+}

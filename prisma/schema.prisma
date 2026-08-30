@@ -1,0 +1,164 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// System Health verification table
+model SystemHealth {
+  id        String   @id @default(uuid())
+  status    String
+  checkedAt DateTime @default(now()) @map("checked_at")
+
+  @@map("system_health")
+}
+
+// Customer entity
+model Customer {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  subscriptions Subscription[]
+  usageEvents   UsageEvent[]
+  usageRecords  UsageRecord[]
+  invoices      Invoice[]
+
+  @@map("customers")
+}
+
+// Plan entity holding versioned pricing_config (JSONB)
+model Plan {
+  id            String         @id @default(uuid())
+  name          String
+  pricingConfig Json           @map("pricing_config")
+  version       Int            @default(1)
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  subscriptions Subscription[]
+  invoices      Invoice[]
+
+  @@map("plans")
+}
+
+// Subscription linking a Customer to a Plan over a time period
+model Subscription {
+  id         String    @id @default(uuid())
+  customerId String    @map("customer_id")
+  planId     String    @map("plan_id")
+  status     String    @default("ACTIVE")
+  startDate  DateTime  @map("start_date")
+  endDate    DateTime? @map("end_date")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  customer Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  plan     Plan      @relation(fields: [planId], references: [id], onDelete: Restrict)
+  invoices Invoice[]
+
+  @@index([customerId, status])
+  @@map("subscriptions")
+}
+
+// Immutable, append-only raw usage events log
+model UsageEvent {
+  id         String   @id @default(uuid())
+  eventId    String   @unique @map("event_id")
+  customerId String   @map("customer_id")
+  featureKey String   @map("feature_key")
+  quantity   BigInt
+  timestamp  DateTime
+  metadata   Json?    @default("{}")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([customerId, featureKey, timestamp])
+  @@index([timestamp])
+  @@map("usage_events")
+}
+
+// Aggregated usage totals per customer, per feature, per billing period
+model UsageRecord {
+  id          String   @id @default(uuid())
+  customerId  String   @map("customer_id")
+  featureKey  String   @map("feature_key")
+  periodStart DateTime @map("period_start")
+  periodEnd   DateTime @map("period_end")
+  quantity    BigInt   @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([customerId, featureKey, periodStart, periodEnd])
+  @@index([customerId, periodStart, periodEnd])
+  @@map("usage_records")
+}
+
+// Invoices generated for billing periods (Immutable once finalized)
+model Invoice {
+  id                    String            @id @default(uuid())
+  invoiceNumber         String            @unique @map("invoice_number")
+  customerId            String            @map("customer_id")
+  subscriptionId        String?           @map("subscription_id")
+  planId                String            @map("plan_id")
+  planVersion           Int               @map("plan_version")
+  pricingConfigSnapshot Json              @map("pricing_config_snapshot")
+  periodStart           DateTime          @map("period_start")
+  periodEnd             DateTime          @map("period_end")
+  subtotalCents         BigInt            @map("subtotal_cents")
+  totalCents            BigInt            @map("total_cents")
+  status                String            @default("FINALIZED") // FINALIZED, VOID
+  finalizedAt           DateTime          @default(now()) @map("finalized_at")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @updatedAt @map("updated_at")
+
+  customer       Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  plan           Plan              @relation(fields: [planId], references: [id], onDelete: Restrict)
+  subscription   Subscription?     @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  lineItems      InvoiceLineItem[]
+  journalEntries JournalEntry[]
+
+  @@index([customerId, periodStart, periodEnd])
+  @@index([status])
+  @@map("invoices")
+}
+
+// Line items breaking down charges on an invoice
+model InvoiceLineItem {
+  id          String   @id @default(uuid())
+  invoiceId   String   @map("invoice_id")
+  featureKey  String?  @map("feature_key")
+  description String
+  quantity    BigInt   @default(1)
+  amountCents BigInt   @map("amount_cents")
+  details     Json?    @default("{}")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@map("invoice_line_items")
+}
+
+// Append-only Double-Entry Ledger Journal Entries
+model JournalEntry {
+  id          String   @id @default(uuid())
+  invoiceId   String?  @map("invoice_id")
+  entryType   String   @map("entry_type") // DEBIT or CREDIT
+  account     String   // e.g. ACCOUNTS_RECEIVABLE, REVENUE
+  amountCents BigInt   @map("amount_cents")
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  invoice Invoice? @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+  @@index([account, entryType])
+  @@map("journal_entries")
+}
