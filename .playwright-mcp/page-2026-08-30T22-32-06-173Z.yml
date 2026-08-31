@@ -1,0 +1,132 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: MeterFlow
+            - generic [ref=e14]: Engine v1.0
+          - paragraph [ref=e15]: High-Throughput Metering & Double-Entry Ledger
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - generic [ref=e23]: "Customer:"
+            - combobox "Customer:" [ref=e24] [cursor=pointer]:
+              - option "Acme Mega Corp (cust_acme_corp)" [selected]
+              - option "Zapier Partner Demo (cust_demo_pro)"
+              - option "Scale Cloud Inc (cust_cloud_scale)"
+          - generic [ref=e25]:
+            - generic [ref=e26]: PG + Redis
+            - button "Refresh Health" [ref=e29]
+      - navigation [ref=e35]:
+        - button "Usage Meter" [ref=e36]
+        - button "Pricing Editor Zero Redeploy" [ref=e41]:
+          - generic [ref=e43]: Pricing Editor
+          - generic [ref=e44]: Zero Redeploy
+        - button "Invoices & Ledger" [ref=e45]
+        - button "Idempotency Playground" [ref=e50]
+        - button "Audit Trail" [active] [ref=e54]
+  - main [ref=e58]:
+    - generic [ref=e839]:
+      - generic [ref=e840]:
+        - heading "End-to-End Financial Audit Trail" [level=2] [ref=e844]
+        - paragraph [ref=e845]: Visual trace from raw event ingestion through aggregation, dynamic pricing evaluation, invoice finalization, and double-entry ledger settlement.
+      - generic [ref=e846]:
+        - generic [ref=e847]:
+          - generic [ref=e848]:
+            - generic [ref=e853]:
+              - heading "1. Append-Only Raw Usage Event" [level=3] [ref=e854]
+              - text: Ingestion Layer (POST /events)
+            - generic [ref=e855]: "Non-Negotiable #2 & #5"
+          - generic [ref=e856]:
+            - generic [ref=e857]:
+              - generic [ref=e858]: "Invariant Safeguards:"
+              - list [ref=e859]:
+                - listitem [ref=e860]:
+                  - generic [ref=e864]: "Immutable write to PostgreSQL `usage_events` table."
+                - listitem [ref=e865]:
+                  - generic [ref=e869]: "Zero `UPDATE` or `DELETE` queries in the entire codebase."
+                - listitem [ref=e870]:
+                  - generic [ref=e874]: "Database-level unique constraint on `event_id` provides tamper-evident idempotency."
+            - generic [ref=e875]:
+              - generic [ref=e876]: "Engine Code & Telemetry:"
+              - generic [ref=e877]: "{ \"event_id\": \"evt_api_1725039000\", \"customer_id\": \"cust_acme_corp\", \"feature_key\": \"api_calls\", \"quantity\": 100 }"
+        - generic [ref=e878]:
+          - generic [ref=e879]:
+            - generic [ref=e886]:
+              - heading "2. High-Throughput Aggregation Buffer" [level=3] [ref=e887]
+              - text: Aggregation Layer (Redis + PG Upsert)
+            - generic [ref=e888]: Zero Lost Updates Under Load
+          - generic [ref=e889]:
+            - generic [ref=e890]:
+              - generic [ref=e891]: "Invariant Safeguards:"
+              - list [ref=e892]:
+                - listitem [ref=e893]:
+                  - generic [ref=e897]: "Atomic in-memory Redis `INCRBY` counter on `usage:{customerId}:{featureKey}:{period}`."
+                - listitem [ref=e898]:
+                  - generic [ref=e902]: "Background cron or on-demand trigger flushes pending deltas to `usage_records`."
+                - listitem [ref=e903]:
+                  - generic [ref=e907]: "Atomic composite SQL upsert `(customer_id, feature_key, period_start, period_end)`."
+            - generic [ref=e908]:
+              - generic [ref=e909]: "Engine Code & Telemetry:"
+              - generic [ref=e910]: "Redis: INCRBY usage:cust_acme:api_calls:2026-08 100 Postgres: INSERT INTO usage_records (...) ON CONFLICT (...) DO UPDATE SET total_quantity = total_quantity + EXCLUDED.total_quantity"
+        - generic [ref=e911]:
+          - generic [ref=e912]:
+            - generic [ref=e917]:
+              - heading "3. Dynamic Config-Driven Pricing Engine" [level=3] [ref=e918]
+              - text: Pricing Strategy Registry (JSONB)
+            - generic [ref=e919]: "Non-Negotiable #1 & #6"
+          - generic [ref=e920]:
+            - generic [ref=e921]:
+              - generic [ref=e922]: "Invariant Safeguards:"
+              - list [ref=e923]:
+                - listitem [ref=e924]:
+                  - generic [ref=e928]: "Pluggable strategy pattern: FlatFee, PerUnit, TieredGraduated, Volume."
+                - listitem [ref=e929]:
+                  - generic [ref=e933]: All arithmetic executed strictly in integer cents (0 float drift).
+                - listitem [ref=e934]:
+                  - generic [ref=e938]: "Evaluated dynamically against versioned `plans.pricing_config` without redeploying code."
+            - generic [ref=e939]:
+              - generic [ref=e940]: "Engine Code & Telemetry:"
+              - generic [ref=e941]: "// Graduated Tier Bracket Execution: Tier 1 (0 -> 1,000): 1,000 * 0¢ = 0¢ Tier 2 (1,000 -> 5,000): 2,500 * 5¢ = 12,500¢ ($125.00) Subtotal = 12,500 cents (Exact Integer)"
+        - generic [ref=e942]:
+          - generic [ref=e943]:
+            - generic [ref=e949]:
+              - heading "4. Atomic Invoice Finalization & Immutability" [level=3] [ref=e950]
+              - text: Billing Service ($transaction)
+            - generic [ref=e951]: "Non-Negotiable #3"
+          - generic [ref=e952]:
+            - generic [ref=e953]:
+              - generic [ref=e954]: "Invariant Safeguards:"
+              - list [ref=e955]:
+                - listitem [ref=e956]:
+                  - generic [ref=e960]: "Single ACID database transaction writes `invoices` and `invoice_line_items`."
+                - listitem [ref=e961]:
+                  - generic [ref=e965]: Snapshots the active plan version and pricing configuration.
+                - listitem [ref=e966]:
+                  - generic [ref=e970]: "Marked `FINALIZED` — in-place mutations trigger `403 Forbidden`."
+            - generic [ref=e971]:
+              - generic [ref=e972]: "Engine Code & Telemetry:"
+              - generic [ref=e973]: "await prisma.$transaction([ createInvoice(status: 'FINALIZED'), createLineItems(items), recordBalancedLedgerJournal(entries) ])"
+        - generic [ref=e974]:
+          - generic [ref=e975]:
+            - generic [ref=e982]:
+              - heading "5. Balanced Double-Entry Accounting Ledger" [level=3] [ref=e983]
+              - text: Ledger Service (Balanced Entries)
+            - generic [ref=e984]: "Non-Negotiable #4 (Σ Debits == Σ Credits)"
+          - generic [ref=e985]:
+            - generic [ref=e986]:
+              - generic [ref=e987]: "Invariant Safeguards:"
+              - list [ref=e988]:
+                - listitem [ref=e989]:
+                  - generic [ref=e993]: Every finalized invoice writes balanced journal entries.
+                - listitem [ref=e994]:
+                  - generic [ref=e998]: "Debit `ACCOUNTS_RECEIVABLE` vs Credit `USAGE_REVENUE`."
+                - listitem [ref=e999]:
+                  - generic [ref=e1003]: "Mathematical invariant asserted on every finalize: `sum(debits) == sum(credits)`."
+            - generic [ref=e1004]:
+              - generic [ref=e1005]: "Engine Code & Telemetry:"
+              - generic [ref=e1006]: "DEBIT | ACCOUNTS_RECEIVABLE | $155.00 (15,500¢) CREDIT | SUBSCRIPTION_REV | $30.00 (3,000¢) CREDIT | USAGE_REVENUE | $125.00 (12,500¢) Balance Check: 15,500¢ == 15,500¢ [PASS ✓]"
+  - contentinfo [ref=e243]:
+    - generic [ref=e244]:
+      - generic [ref=e245]: MeterFlow Engine — Usage-Based Billing & Double-Entry Ledger
+      - generic [ref=e246]: Integer Cents • Append-Only • Zero Float Drift

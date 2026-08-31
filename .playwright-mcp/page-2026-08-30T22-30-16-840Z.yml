@@ -1,0 +1,45 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: MeterFlow
+            - generic [ref=e14]: Engine v1.0
+          - paragraph [ref=e15]: High-Throughput Metering & Double-Entry Ledger
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - generic [ref=e23]: "Customer:"
+            - combobox "Customer:" [ref=e24] [cursor=pointer]:
+              - option "Acme Mega Corp (cust_acme_corp)" [selected]
+              - option "Zapier Partner Demo (cust_demo_pro)"
+              - option "Scale Cloud Inc (cust_cloud_scale)"
+          - generic [ref=e25]:
+            - generic [ref=e26]: PG + Redis
+            - button "Refresh Health" [ref=e29]
+      - navigation [ref=e35]:
+        - button "Usage Meter" [ref=e36]
+        - button "Pricing Editor Zero Redeploy" [ref=e41]:
+          - generic [ref=e43]: Pricing Editor
+          - generic [ref=e44]: Zero Redeploy
+        - button "Invoices & Ledger" [active] [ref=e45]
+        - button "Idempotency Playground" [ref=e50]
+        - button "Audit Trail" [ref=e54]
+  - main [ref=e58]:
+    - generic [ref=e435]:
+      - generic [ref=e436]:
+        - generic [ref=e437]:
+          - heading "Invoices & Double-Entry Ledger Auditor" [level=2] [ref=e442]
+          - paragraph [ref=e443]: Inspect finalized invoices and verify balanced double-entry accounting records with zero float drift.
+        - generic [ref=e444]:
+          - button "Generate New Monthly Invoice" [ref=e445]
+          - button [ref=e449]
+      - generic [ref=e455]:
+        - generic [ref=e456]:
+          - generic [ref=e457]: Invoices (0)
+          - generic [ref=e458]: No invoices generated yet. Click "Generate New Monthly Invoice" to test.
+        - generic [ref=e459]: Select an invoice on the left or generate a new one to audit ledger entries.
+  - contentinfo [ref=e243]:
+    - generic [ref=e244]:
+      - generic [ref=e245]: MeterFlow Engine — Usage-Based Billing & Double-Entry Ledger
+      - generic [ref=e246]: Integer Cents • Append-Only • Zero Float Drift

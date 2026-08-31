@@ -10,21 +10,33 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly configService: ConfigService) {}
 
   onModuleInit() {
-    const host = this.configService.get<string>('REDIS_HOST', 'localhost');
-    const port = this.configService.get<number>('REDIS_PORT', 6379);
-    const password = this.configService.get<string>('REDIS_PASSWORD') || undefined;
+    const redisUrl = this.configService.get<string>('REDIS_URL');
 
-    this.client = new Redis({
-      host,
-      port: Number(port),
-      password,
-      retryStrategy: (times) => Math.min(times * 50, 2000),
-      maxRetriesPerRequest: 3,
-      lazyConnect: true,
-    });
+    if (redisUrl) {
+      this.client = new Redis(redisUrl, {
+        retryStrategy: (times) => Math.min(times * 50, 2000),
+        maxRetriesPerRequest: 3,
+        lazyConnect: true,
+      });
+    } else {
+      const host = this.configService.get<string>('REDIS_HOST', 'localhost');
+      const port = this.configService.get<number>('REDIS_PORT', 6379);
+      const password = this.configService.get<string>('REDIS_PASSWORD') || undefined;
+
+      this.client = new Redis({
+        host,
+        port: Number(port),
+        password,
+        retryStrategy: (times) => Math.min(times * 50, 2000),
+        maxRetriesPerRequest: 3,
+        lazyConnect: true,
+      });
+    }
+
+    const target = redisUrl ? 'Cloud Redis (REDIS_URL)' : `${this.configService.get('REDIS_HOST', 'localhost')}:${this.configService.get('REDIS_PORT', 6379)}`;
 
     this.client.on('connect', () => {
-      this.logger.log(`Redis connected to ${host}:${port}`);
+      this.logger.log(`Redis connected to ${target}`);
     });
 
     this.client.on('error', (err) => {

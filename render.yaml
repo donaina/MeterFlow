@@ -1,0 +1,25 @@
+services:
+  # Backend NestJS Web Service
+  - type: web
+    name: meterflow-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && node dist/main.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: meterflow-db
+          property: connectionString
+      - key: REDIS_URL
+        sync: false
+
+databases:
+  # Managed PostgreSQL Database
+  - name: meterflow-db
+    plan: free
+    postgresMajorVersion: 16
