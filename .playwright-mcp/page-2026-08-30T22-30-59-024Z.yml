@@ -1,0 +1,77 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: MeterFlow
+            - generic [ref=e14]: Engine v1.0
+          - paragraph [ref=e15]: High-Throughput Metering & Double-Entry Ledger
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - generic [ref=e23]: "Customer:"
+            - combobox "Customer:" [ref=e24] [cursor=pointer]:
+              - option "Acme Mega Corp (cust_acme_corp)" [selected]
+              - option "Zapier Partner Demo (cust_demo_pro)"
+              - option "Scale Cloud Inc (cust_cloud_scale)"
+          - generic [ref=e25]:
+            - generic [ref=e26]: PG + Redis
+            - button "Refresh Health" [ref=e29]
+      - navigation [ref=e35]:
+        - button "Usage Meter" [ref=e36]
+        - button "Pricing Editor Zero Redeploy" [ref=e41]:
+          - generic [ref=e43]: Pricing Editor
+          - generic [ref=e44]: Zero Redeploy
+        - button "Invoices & Ledger" [ref=e45]
+        - button "Idempotency Playground" [ref=e50]
+        - button "Audit Trail" [ref=e54]
+  - main [ref=e58]:
+    - generic [ref=e568]:
+      - generic [ref=e569]:
+        - generic [ref=e570]:
+          - heading "Database-Enforced Idempotency Playground" [level=2] [ref=e574]
+          - paragraph [ref=e575]:
+            - text: Verify duplicate event suppression in 10 seconds. MeterFlow guarantees zero double-counting via database-level
+            - code [ref=e576]: "@unique(event_id)"
+            - text: constraints.
+        - button "Clear Log" [ref=e577]
+      - generic [ref=e578]:
+        - generic [ref=e579]:
+          - generic [ref=e580]:
+            - generic [ref=e581]: Active Test Event ID (Deduplication Key)
+            - generic [ref=e582]:
+              - code [ref=e583]: evt_idemp_1788129050
+              - button "Generate New Key" [ref=e584]
+          - generic [ref=e585]:
+            - generic [ref=e586]:
+              - generic [ref=e587]: Total Sent
+              - text: "1"
+            - generic [ref=e588]:
+              - generic [ref=e589]: Ingested (202)
+              - text: "1"
+            - generic [ref=e590]:
+              - generic [ref=e591]: Suppressed (200)
+              - text: "0"
+        - generic [ref=e592]:
+          - button "1. Send First Event (202 Accepted)" [ref=e593]
+          - button "2. Replay Duplicate ID (200 OK)" [ref=e597]
+          - button "3. Launch 20x Concurrent Storm" [ref=e604]
+      - generic [ref=e608]:
+        - generic [ref=e609]:
+          - heading "Live Request & Deduplication Log" [level=3] [ref=e610]
+          - generic [ref=e611]: "Audit count: 1 entries"
+        - generic [ref=e612]:
+          - generic [ref=e613]:
+            - generic [ref=e614]: HTTP Status
+            - generic [ref=e615]: Event ID
+            - generic [ref=e616]: Deduplication Result
+            - generic [ref=e617]: Latency
+          - generic [ref=e619]:
+            - generic [ref=e620]: 202 Accepted
+            - generic [ref=e622]: evt_idemp_1788129050
+            - generic [ref=e623]: New Event Recorded
+            - generic [ref=e628]: 37 ms
+  - contentinfo [ref=e243]:
+    - generic [ref=e244]:
+      - generic [ref=e245]: MeterFlow Engine — Usage-Based Billing & Double-Entry Ledger
+      - generic [ref=e246]: Integer Cents • Append-Only • Zero Float Drift

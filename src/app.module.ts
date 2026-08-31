@@ -20,14 +20,31 @@ import { CorrelationIdMiddleware } from './common/middleware/correlation-id.midd
     }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        connection: {
-          host: configService.get<string>('REDIS_HOST', 'localhost'),
-          port: Number(configService.get<number>('REDIS_PORT', 6379)),
-          password: configService.get<string>('REDIS_PASSWORD') || undefined,
-          maxRetriesPerRequest: null,
-        },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const redisUrl = configService.get<string>('REDIS_URL');
+        if (redisUrl) {
+          const urlObj = new URL(redisUrl);
+          return {
+            connection: {
+              host: urlObj.hostname,
+              port: Number(urlObj.port || 6379),
+              username: urlObj.username || undefined,
+              password: urlObj.password || undefined,
+              tls: urlObj.protocol === 'rediss:' ? {} : undefined,
+              maxRetriesPerRequest: null,
+            },
+          };
+        }
+
+        return {
+          connection: {
+            host: configService.get<string>('REDIS_HOST', 'localhost'),
+            port: Number(configService.get<number>('REDIS_PORT', 6379)),
+            password: configService.get<string>('REDIS_PASSWORD') || undefined,
+            maxRetriesPerRequest: null,
+          },
+        };
+      },
       inject: [ConfigService],
     }),
     PrismaModule,

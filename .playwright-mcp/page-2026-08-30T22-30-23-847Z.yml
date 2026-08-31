@@ -1,0 +1,125 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e11]:
+          - generic [ref=e12]:
+            - generic [ref=e13]: MeterFlow
+            - generic [ref=e14]: Engine v1.0
+          - paragraph [ref=e15]: High-Throughput Metering & Double-Entry Ledger
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - generic [ref=e23]: "Customer:"
+            - combobox "Customer:" [ref=e24] [cursor=pointer]:
+              - option "Acme Mega Corp (cust_acme_corp)" [selected]
+              - option "Zapier Partner Demo (cust_demo_pro)"
+              - option "Scale Cloud Inc (cust_cloud_scale)"
+          - generic [ref=e25]:
+            - generic [ref=e26]: PG + Redis
+            - button "Refresh Health" [ref=e29]
+      - navigation [ref=e35]:
+        - button "Usage Meter" [ref=e36]
+        - button "Pricing Editor Zero Redeploy" [ref=e41]:
+          - generic [ref=e43]: Pricing Editor
+          - generic [ref=e44]: Zero Redeploy
+        - button "Invoices & Ledger" [ref=e45]
+        - button "Idempotency Playground" [ref=e50]
+        - button "Audit Trail" [ref=e54]
+  - main [ref=e58]:
+    - generic [ref=e435]:
+      - generic [ref=e436]:
+        - generic [ref=e437]:
+          - heading "Invoices & Double-Entry Ledger Auditor" [level=2] [ref=e442]
+          - paragraph [ref=e443]: Inspect finalized invoices and verify balanced double-entry accounting records with zero float drift.
+        - generic [ref=e444]:
+          - button "Generate New Monthly Invoice" [ref=e445]
+          - button [ref=e449]
+      - generic [ref=e461]:
+        - generic [ref=e462]:
+          - generic [ref=e469]:
+            - generic [ref=e470]: Double-Entry Invariant
+            - generic [ref=e471]: Ledger Balanced (Invariant Verified)
+          - generic [ref=e472]: Σ Debits = Σ Credits
+        - generic [ref=e477]:
+          - generic [ref=e478]:
+            - generic [ref=e479]: Total Debits (Receivable)
+            - text: $30.00
+            - generic [ref=e480]: 3,000 cents
+          - generic [ref=e481]:
+            - generic [ref=e482]: Total Credits (Revenue)
+            - text: $30.00
+            - generic [ref=e483]: 3,000 cents
+        - generic [ref=e484]:
+          - generic [ref=e485]:
+            - text: "Journal Entries:"
+            - strong [ref=e486]: "2"
+          - generic [ref=e487]: "Difference: $0.00 (Exact Cent Parity)"
+      - generic [ref=e455]:
+        - generic [ref=e456]:
+          - generic [ref=e457]: Invoices (1)
+          - button "INV-202608-S6JTA FINALIZED 8/30/2026 $30.00" [ref=e488]:
+            - generic [ref=e489]:
+              - generic [ref=e490]: INV-202608-S6JTA
+              - generic [ref=e491]: FINALIZED
+            - generic [ref=e492]:
+              - generic [ref=e493]: 8/30/2026
+              - generic [ref=e494]: $30.00
+        - generic [ref=e460]:
+          - generic [ref=e495]:
+            - generic [ref=e496]:
+              - generic [ref=e497]:
+                - heading "INV-202608-S6JTA" [level=3] [ref=e498]
+                - generic [ref=e499]: Immutable (v2)
+              - generic [ref=e500]: "ID: e8a8b1ad-a135-437d-9248-65370043e79c"
+            - generic [ref=e501]:
+              - generic [ref=e502]: Total Due
+              - generic [ref=e503]: $30.00
+          - generic [ref=e504]:
+            - generic [ref=e505]: 1. Itemized Billable Line Items
+            - generic [ref=e510]:
+              - generic [ref=e511]:
+                - generic [ref=e512]: Description
+                - generic [ref=e513]: Quantity
+                - generic [ref=e514]: Amount
+              - generic [ref=e515]:
+                - generic [ref=e516]: Base Pro Subscription
+                - generic [ref=e517]: "1"
+                - generic [ref=e518]: $30.00
+              - generic [ref=e519]:
+                - generic [ref=e520]: Graduated API Invocations
+                - generic [ref=e521]: "250"
+                - generic [ref=e522]: $0.00
+              - generic [ref=e523]:
+                - generic [ref=e524]: Persistent Storage Volume
+                - generic [ref=e525]: "0"
+                - generic [ref=e526]: $0.00
+          - generic [ref=e527]:
+            - generic [ref=e528]: 2. Double-Entry Accounting Journal (Append-Only)
+            - generic [ref=e534]:
+              - generic [ref=e535]:
+                - generic [ref=e536]: Type
+                - generic [ref=e537]: Account
+                - generic [ref=e538]: Debit
+                - generic [ref=e539]: Credit
+              - generic [ref=e540]:
+                - generic [ref=e541]: DEBIT
+                - generic [ref=e542]: ACCOUNTS_RECEIVABLE
+                - generic [ref=e543]: $30.00
+                - generic [ref=e544]: "-"
+              - generic [ref=e545]:
+                - generic [ref=e546]: CREDIT
+                - generic [ref=e547]: SUBSCRIPTION_REVENUE
+                - generic [ref=e548]: "-"
+                - generic [ref=e549]: $30.00
+          - generic [ref=e552]:
+            - generic [ref=e553]:
+              - generic [ref=e554]: "Non-Negotiable Check: Invoice Immutability"
+              - generic [ref=e555]:
+                - text: Attempt to execute
+                - code [ref=e556]: PUT /invoices/e8a8b1ad-a135-437d-9248-65370043e79c
+                - text: to test database-level immutability enforcement.
+            - button "Challenge Immutability" [ref=e557]
+  - contentinfo [ref=e243]:
+    - generic [ref=e244]:
+      - generic [ref=e245]: MeterFlow Engine — Usage-Based Billing & Double-Entry Ledger
+      - generic [ref=e246]: Integer Cents • Append-Only • Zero Float Drift
